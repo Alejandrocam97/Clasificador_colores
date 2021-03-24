@@ -14,9 +14,9 @@ string colores(Mat image);
 int main()
 {
     Mat im, dst, gray, Gauss, abs_dst, Cont, imgHSV;
-    Mat maskHSV = Mat::zeros(dst.size(), CV_8UC3);
     vector<vector<Point>> Contours;
-    string forma, color;
+    string forma, color, nom_Figura;
+    int x, y;
     im = imread("D:/Alejandro/TFG Vulkan/OpenCV_formas/shapes.jpg");
     if (im.empty())
     {
@@ -35,19 +35,19 @@ int main()
 
     for (int i = 0; i < Contours.size(); i++)
     {
-        Mat drawing = Mat::zeros(dst.size(), CV_8UC3);
+        Rect fig = boundingRect(Contours[i]);
+        Mat drawing = Mat::zeros(dst.size(), CV_8U);
+        Mat maskHSV = Mat::zeros(dst.size(), CV_8UC3);
         drawContours(drawing, Contours, i, Scalar(255,255,255), -1);
         //imshow("contorno", drawing);
         //imshow("HSV", imgHSV);
-        waitKey(0);
-        bitwise_and(imgHSV, drawing, maskHSV);
-        imshow("img", maskHSV);
-        //cvtColor(maskHSV, HSV, COLOR_BGR2HSV_FULL);
-        //imshow("H", HSV);
+        bitwise_and(imgHSV, imgHSV, maskHSV, drawing);
+        //imshow("img", maskHSV);
         forma = formas(Contours[i]);
         color = colores(maskHSV);
-
-        imshow(forma + ' ' + color, im);
+        nom_Figura = forma + " " + color;
+        putText(im, nom_Figura, Point(fig.x, fig.y-5), 1, 0.8, Scalar(0, 255, 0), 1);
+        imshow("imagen", im);
 
         waitKey(0);
     }
@@ -117,23 +117,23 @@ string formas(vector<Point> Contorno)
 
     if (Pol.size() == 3)
     {
-        result = "triángulo";
+        result = "triangulo";
     }
     else if (Pol.size() == 4)
     {
-        result = "cuadrilátero";
+        result = "cuadrilatero";
     }
     else if (Pol.size() == 5)
     {
-        result = "pentágono";
+        result = "pentagono";
     }
     else if (Pol.size() == 6)
     {
-        result = "hexágono";
+        result = "hexagono";
     }
     else
     {
-        result = "círculo";
+        result = "circulo";
     }
 
     return result;
